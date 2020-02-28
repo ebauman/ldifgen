@@ -1,5 +1,12 @@
 {{ $dc := .DC }}
 {{ $userClasses := .UserClasses }}
+{{ $ouClasses := .OUClasses }}
+
+{{ range .OUs }}dn: ou={{.}}
+ou: {{ $.TrimOU . }}
+{{ range $ouClasses}}objectClass: {{.}}
+{{end}}
+{{end}}
 
 {{ range .Users }}dn: cn={{ .CommonName }},{{.OU}},{{$dc}}
 {{ range $userClasses}}objectClass: {{.}}

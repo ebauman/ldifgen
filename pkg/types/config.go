@@ -1,22 +1,27 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type GenerateConfig struct {
-	Users int
-	Groups int
-	OUs int
-	Domain string
-	UserClasses []string
-	GroupClasses []string
+	Users                    int
+	Groups                   int
+	OUs                      int
+	Domain                   string
+	UserClasses              []string
+	GroupClasses             []string
 	GroupMembershipAttribute string
 }
 
 type RenderConfig struct {
 	UserClasses              []string
 	GroupClasses             []string
+	OUClasses                []string
 	Users                    []*User
 	Domain                   []string
+	OUs                      []string
 	GroupMembershipAttribute string
 }
 
@@ -30,4 +35,8 @@ func (c RenderConfig) DC() string {
 		}
 	}
 	return domain
+}
+
+func (c RenderConfig) TrimOU(ou string) string {
+	return strings.Split(ou, ",")[0]
 }

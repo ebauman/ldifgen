@@ -16,22 +16,12 @@ func main() {
 		log.Fatalf("%v", err)
 	}
 
-
 	nameGen, err := names.NewNameGenerator()
 	if err != nil {
 		log.Fatalf("error creating name generator: %v", err)
 	}
 
-	ouGen, err := ous.New(5, nameGen)
-	if err != nil {
-		log.Fatalf("error creating ous generator: %v", err)
-	}
-
-	ouList := make([][]string, 0)
-	for i := 0; i < 10; i++ {
-		tempOU := ouGen.Generate()
-		ouList = append(ouList, tempOU)
-	}
+	ouList := ous.Generate(5, 5, nameGen)
 
 	userGen, err := users2.New(nameGen, ouList)
 	if err != nil {
@@ -39,7 +29,7 @@ func main() {
 	}
 
 	users := make([]*types.User, 0)
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 1; i++ {
 		tempUser, err := userGen.Generate()
 		if err != nil {
 			log.Printf("error generating user: %v", err)
@@ -47,8 +37,17 @@ func main() {
 		users = append(users, tempUser)
 	}
 
-	config := types.RenderConfig{Users: users, Domain: []string{"testing", "rancher", "com"}, UserClasses: []string{"top", "person", "organizationalPerson", "inetOrgPerson"}}
-	err = tmpl.Execute(os.Stdout, config)
+	renderConfig := types.RenderConfig{
+		Users: users,
+		Domain: []string{"testing", "rancher", "com"},
+		UserClasses: []string{"top", "person", "organizationalPerson", "inetOrgPerson"},
+		GroupClasses: []string{"top", "groupOfNames"},
+		OUClasses: []string{"top", "organizationalUnit"},
+		OUs: ouList,
+	}
+
+
+	err = tmpl.Execute(os.Stdout, renderConfig)
 	if err != nil {
 		log.Fatalf("%v", err)
 	}
