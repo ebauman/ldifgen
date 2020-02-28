@@ -1,0 +1,10 @@
+{{ $dc := .DC }}
+{{ $userClasses := .UserClasses }}
+
+{{ range .Users }}dn: cn={{ .CommonName }},{{.OU}},{{$dc}}
+{{ range $userClasses}}objectClass: {{.}}
+{{end}}cn: {{.CommonName}}
+sn: {{.Surname}}
+uid: {{.UID}}
+
+{{ end }}
