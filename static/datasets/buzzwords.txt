@@ -62,7 +62,7 @@ bring your own device
 clickthrough
 cloud computing
 collaboration
-cross-platform
+cross platform
 convergence
 datafication
 data mining
@@ -73,23 +73,21 @@ machine learning
 nanotechnology
 open source
 quantum supremacy
-platform-as-a-service
-software-as-a-service
-service-as-a-service
-ldap-as-a-service
+platform as a service
+software as a service
+service as a service
+ldap as a service
 software defined networking
 single pane of glass
 responsive web design
 deep web
 document management
-test-driven development
-user-driven development
-development-driven development
-ldap-driven development
-end-to-end
+test driven development
+user driven development
+development driven development
+ldap driven development
 enterprise content management
 enterprise service bus
 enterprise super enterprise
 web services
-best-in-class
-NCC1701
+best in class

@@ -1,39 +1,26 @@
 package types
 
 type User struct {
-	Id          string
-	GivenName   string
-	CommonName  string
-	Surname     string
-	Manager     string
-	Secretary   string
-	Title       string
-	Description string
-	OU          string
+	Id                string
+	GivenName         string
+	DistinguishedName string
+	CommonName        string
+	Surname           string
+	Manager           string
+	Secretary         string
+	Title             string
+	Description       string
+	OU                string
 }
 
 type Group struct {
-	Id         string
-	CommonName string
-	Members    []*User
-}
-
-type OrganizationalUnit struct {
 	Id                 string
 	CommonName         string
-	OrganizationalUnit *OrganizationalUnit
+	OrganizationalUnit string
+	DistinguishedName  string
+	Members            []string
 }
 
-func (u User) UID() string {
+func (u *User) UID() string {
 	return u.GivenName + "." + u.Surname
-}
-
-func (u User) recurseOUChain(ou *OrganizationalUnit, path string) string {
-	path += "ous=" + ou.CommonName
-	if ou.OrganizationalUnit == nil {
-		return path
-	} else {
-		path += ","
-		return u.recurseOUChain(ou.OrganizationalUnit, path)
-	}
 }
