@@ -72,7 +72,6 @@ func NewNameGenerator(firstNamePath string, lastNamePath string, departmentPath 
 		groupPath = "statik://datasets/groups.txt"
 	}
 
-
 	err := load(firstNamePath, &n.firstNames)
 	if err != nil {
 		return nil, err

@@ -13,9 +13,9 @@ type GenerateConfig struct {
 	UserClasses              []string
 	GroupClasses             []string
 	OUClasses                []string
-	UserChangeType			 string
-	GroupChangeType			 string
-	OUChangeType			 string
+	UserChangeType           string
+	GroupChangeType          string
+	OUChangeType             string
 	BuzzwordDataset          string
 	DepartmentDataset        string
 	FirstNameDataset         string
@@ -25,18 +25,13 @@ type GenerateConfig struct {
 }
 
 type RenderConfig struct {
-	UserClasses              []string
-	GroupClasses             []string
-	OUClasses                []string
-	UserChangeType			 string
-	GroupChangeType			 string
-	OUChangeType			 string
-	Users                    []*User
-	Domain                   []string
-	OUs                      []string
-	Groups                   []*Group
-	GroupMembershipAttribute string
-	Time                     string
+	GenerateConfig
+
+	Users  []*User
+	Domain []string
+	OUs    []string
+	Groups []*Group
+	Time   string
 }
 
 func (c RenderConfig) DC() string {

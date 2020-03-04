@@ -1,13 +1,12 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ebauman/ldifgen/pkg/generators/groups"
 	"github.com/ebauman/ldifgen/pkg/generators/names"
 	"github.com/ebauman/ldifgen/pkg/generators/ous"
 	"github.com/ebauman/ldifgen/pkg/generators/users"
-	_ "github.com/ebauman/ldifgen/pkg/statik"
+	_ "github.com/ebauman/ldifgen/pkg/statik" // needed because of how statik imports things
 	"github.com/ebauman/ldifgen/pkg/types"
 	"github.com/rakyll/statik/fs"
 	"github.com/sirupsen/logrus"
@@ -65,17 +64,22 @@ func GenerateCommand() *cli.Command {
 			Usage: "comma-separated list of classes for group objects",
 		},
 		&cli.StringFlag{
-			Name: "user-change-type",
+			Name:  "group-membership-attribute",
+			Value: "member",
+			Usage: "attribute of the group objects specifying membership",
+		},
+		&cli.StringFlag{
+			Name:  "user-change-type",
 			Value: "add",
 			Usage: "LDIF changetype for users",
 		},
 		&cli.StringFlag{
-			Name: "group-change-type",
+			Name:  "group-change-type",
 			Value: "add",
 			Usage: "LDIF changetype for groups",
 		},
 		&cli.StringFlag{
-			Name: "ou-change-type",
+			Name:  "ou-change-type",
 			Value: "add",
 			Usage: "LDIF changetype for OUs",
 		},
@@ -160,17 +164,12 @@ func doGenerate(gconf *types.GenerateConfig) error {
 	}
 
 	renderConfig := types.RenderConfig{
-		Users: userList,
-		Domain: gconf.Domain,
-		UserChangeType: gconf.UserChangeType,
-		GroupChangeType: gconf.GroupChangeType,
-		OUChangeType: gconf.OUChangeType,
-		UserClasses: gconf.UserClasses,
-		GroupClasses: gconf.GroupClasses,
-		OUClasses: gconf.OUClasses,
-		OUs: ouList,
-		Groups: groupList,
-		Time: time.Now().Format("2006-01-02T15:04:05-0700"),
+		GenerateConfig: *gconf,
+		Users:          userList,
+		Domain:         gconf.Domain,
+		OUs:            ouList,
+		Groups:         groupList,
+		Time:           time.Now().Format("2006-01-02T15:04:05-0700"),
 	}
 
 	err = tmpl.Execute(os.Stdout, renderConfig)
@@ -218,6 +217,10 @@ func generateLdif(ctx *cli.Context) error {
 		logrus.Fatalf("invalid ou change type")
 	}
 
+	if ctx.String("group-membership-attribute") == "" {
+		logrus.Fatalf("invalid group membership attribute")
+	}
+
 	if ok := checkPath(ctx.String("buzzword-dataset")); !ok {
 		logrus.Fatalf("invalid buzzword dataset path: %s", ctx.String("buzzword-dataset"))
 	}
@@ -239,22 +242,23 @@ func generateLdif(ctx *cli.Context) error {
 	}
 
 	generateConfig := &types.GenerateConfig{
-		Users: ctx.Int("users"),
-		Groups: ctx.Int("groups"),
-		OUs: ctx.Int("ous"),
-		OUDepth: ctx.Int("ou-depth"),
-		UserChangeType: ctx.String("user-change-type"),
-		GroupChangeType: ctx.String("group-change-type"),
-		OUChangeType: ctx.String("ou-change-type"),
-		Domain: *domainList,
-		UserClasses: *userClassList,
-		GroupClasses: *groupClassList,
-		OUClasses: *ouClassList,
-		BuzzwordDataset: ctx.String("buzzword-dataset"),
-		DepartmentDataset: ctx.String("department-dataset"),
-		FirstNameDataset: ctx.String("first-name-dataset"),
-		LastNameDataset: ctx.String("last-name-dataset"),
-		GroupsDataset: ctx.String("groups-dataset"),
+		Users:                    ctx.Int("users"),
+		Groups:                   ctx.Int("groups"),
+		OUs:                      ctx.Int("ous"),
+		OUDepth:                  ctx.Int("ou-depth"),
+		UserChangeType:           ctx.String("user-change-type"),
+		GroupChangeType:          ctx.String("group-change-type"),
+		OUChangeType:             ctx.String("ou-change-type"),
+		GroupMembershipAttribute: ctx.String("group-membership-attribute"),
+		Domain:                   *domainList,
+		UserClasses:              *userClassList,
+		GroupClasses:             *groupClassList,
+		OUClasses:                *ouClassList,
+		BuzzwordDataset:          ctx.String("buzzword-dataset"),
+		DepartmentDataset:        ctx.String("department-dataset"),
+		FirstNameDataset:         ctx.String("first-name-dataset"),
+		LastNameDataset:          ctx.String("last-name-dataset"),
+		GroupsDataset:            ctx.String("groups-dataset"),
 	}
 
 	return doGenerate(generateConfig)
@@ -274,12 +278,12 @@ func checkPath(path string) bool {
 func parseDomain(domain string) (*[]string, error) {
 	re := regexp.MustCompile("(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]")
 	if !re.Match([]byte(domain)) {
-		return nil, errors.New(fmt.Sprintf("invalid domain %s, regex failed", domain))
+		return nil, fmt.Errorf("invalid domain %s, regex failed", domain)
 	}
 
 	domainList := strings.Split(domain, ".")
 	if len(domainList) < 2 {
-		return nil, errors.New(fmt.Sprintf("invalid domain %s, split resulted in < 2 segments", domain))
+		return nil, fmt.Errorf("invalid domain %s, split resulted in < 2 segments", domain)
 	}
 
 	return &domainList, nil
@@ -288,7 +292,7 @@ func parseDomain(domain string) (*[]string, error) {
 func parseClassList(classes string) (*[]string, error) {
 	classList := strings.Split(classes, ",")
 	if len(classList) == 0 {
-		return nil, errors.New(fmt.Sprintf("invalid class list: %v", classes))
+		return nil, fmt.Errorf("invalid class list: %v", classes)
 	}
 	return &classList, nil
 }

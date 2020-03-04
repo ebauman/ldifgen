@@ -1,3 +1,13 @@
 .idea
-ldifgen
+/.dapper
+/bin
+/dist
+*.swp
+/.trash-cache
+/trash.lock
+kube_config*
+/rke
+.vscode
+cluster.rkestate
+cluster.yml
 *.ldif

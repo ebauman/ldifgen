@@ -1,7 +1,6 @@
 package types
 
 type User struct {
-	Id                string
 	GivenName         string
 	DistinguishedName string
 	CommonName        string
@@ -14,7 +13,6 @@ type User struct {
 }
 
 type Group struct {
-	Id                 string
 	CommonName         string
 	OrganizationalUnit string
 	DistinguishedName  string

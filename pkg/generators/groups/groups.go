@@ -13,9 +13,9 @@ import (
 type GroupGenerator struct {
 	NameGenerator *names.NameGenerator
 	OUList        []string
-	Members		  []string
-	Domain		  []string
-	UserList	  []*types.User
+	Members       []string
+	Domain        []string
+	UserList      []*types.User
 }
 
 func New(domain []string, ng *names.NameGenerator, ouList []string, userList []*types.User) (*GroupGenerator, error) {
@@ -23,7 +23,7 @@ func New(domain []string, ng *names.NameGenerator, ouList []string, userList []*
 		return nil, errors.New("undefined name generator")
 	}
 
-	return &GroupGenerator{NameGenerator: ng, OUList: ouList, Domain: domain, UserList:userList}, nil
+	return &GroupGenerator{NameGenerator: ng, OUList: ouList, Domain: domain, UserList: userList}, nil
 }
 
 func (gg *GroupGenerator) Generate(members []*types.User) (*types.Group, error) {
@@ -49,7 +49,7 @@ func (gg *GroupGenerator) GenerateN(count int) ([]*types.Group, error) {
 	userChunkPos := 0
 	for i := 0; i < count; i++ {
 		tryCount := 0
-		members := gg.UserList[userChunkPos:((i+1)*userChunkSize)]
+		members := gg.UserList[userChunkPos:((i + 1) * userChunkSize)]
 		for {
 			tempGroup, err := gg.Generate(members)
 			if err != nil {
@@ -60,13 +60,12 @@ func (gg *GroupGenerator) GenerateN(count int) ([]*types.Group, error) {
 				logrus.Infof("group name collision. generating new group")
 				if tryCount > 5 {
 					return nil, fmt.Errorf("too many name collisions generating groups")
-				} else {
-					tryCount++
 				}
+				tryCount++
 			} else {
 				groupMap[tempGroup.DistinguishedName] = 1
 				groupList = append(groupList, tempGroup)
-				userChunkPos = (i+1)*userChunkSize
+				userChunkPos = (i + 1) * userChunkSize
 				break
 			}
 		}

@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+source $(dirname $0)/version
+
+cd $(dirname $0)/..
+
+OS_ARCH_ARG_LINUX="amd64 arm arm64"
+OS_ARCH_ARG_WINDOWS="386 amd64"
+OS_ARCH_ARG_DARWIN="amd64"
+
+mkdir -p bin
+[ "$(uname)" != "Darwin" ] && LINKFLAGS="-extldflags -static -s"
+CGO_ENABLED=0 go build -ldflags "-X main.VERSION=$VERSION $LINKFLAGS" -o bin/ldifgen
+
+if [ -n "$CROSS" ]; then
+    rm -rf build/bin
+    mkdir -p build/bin
+
+    for ARCH in ${OS_ARCH_ARG_LINUX}; do
+        OUTPUT_BIN="build/bin/ldifgen_linux-$ARCH"
+        echo "Building binary for linux/$ARCH..."
+        GOARCH=$ARCH GOOS=linux CGO_ENABLED=0 go build \
+                -ldflags="-w -X main.VERSION=$VERSION" \
+                -o ${OUTPUT_BIN} ./
+    done
+
+    for ARCH in ${OS_ARCH_ARG_WINDOWS}; do
+        OUTPUT_BIN="build/bin/ldifgen_windows-$ARCH.exe"
+        echo "Building binary for windows/$ARCH..."
+        GOARCH=$ARCH GOOS=windows CGO_ENABLED=0 go build \
+                -ldflags="-w -X main.VERSION=$VERSION" \
+                -o ${OUTPUT_BIN} ./
+    done
+
+    for ARCH in ${OS_ARCH_ARG_DARWIN}; do
+        OUTPUT_BIN="build/bin/ldifgen_darwin-$ARCH"
+        echo "Building binary for darwin/$ARCH..."
+        GOARCH=$ARCH GOOS=darwin CGO_ENABLED=0 go build \
+                -ldflags="-w -X main.VERSION=$VERSION" \
+                -o ${OUTPUT_BIN} ./
+    done
+fi

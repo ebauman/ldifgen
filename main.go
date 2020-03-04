@@ -12,9 +12,9 @@ import (
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	app := &cli.App{
-		Name: "ldifgen",
+		Name:    "ldifgen",
 		Authors: []*cli.Author{{Name: "Eamon Bauman", Email: "eamon@eamonbauman.com"}},
-		Usage: "Generate LDIF files with complex structures",
+		Usage:   "Generate LDIF files with complex structures",
 		Commands: []*cli.Command{
 			cmd.GenerateCommand(),
 		},

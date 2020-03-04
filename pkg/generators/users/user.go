@@ -13,7 +13,7 @@ import (
 type UserGenerator struct {
 	NameGenerator *names.NameGenerator
 	OUList        []string
-	Domain	      []string
+	Domain        []string
 }
 
 func New(domain []string, nameGenerator *names.NameGenerator, ouList []string) (*UserGenerator, error) {
@@ -50,9 +50,8 @@ func (ug *UserGenerator) GenerateN(count int) ([]*types.User, error) {
 				logrus.Infof("user uid collision. generating new user")
 				if tryCount > 5 {
 					return nil, fmt.Errorf("too many name collisions generating users")
-				} else {
-					tryCount++
 				}
+				tryCount++
 			} else {
 				userMap[tempUser.UID()] = 1
 				userList = append(userList, tempUser)
